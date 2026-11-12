@@ -251,8 +251,33 @@ static OSStatus GeneratePreviewForURL(void *thisInterface,
     @autoreleasepool {
         NSData *png = ReadValidatedEmbeddedPNG(url);
         if (png == nil || QLPreviewRequestIsCancelled(preview)) return paramErr;
-        /* The legacy Quick Look preview API expects the generic image UTI. */
-        QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)png, kUTTypeImage, NULL);
+        CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)png, NULL);
+        if (source == NULL) return paramErr;
+        CGImageRef image = CGImageSourceCreateImageAtIndex(source, 0, NULL);
+        CFRelease(source);
+        if (image == NULL) return paramErr;
+        /* Catalina's legacy image display path rejected valid PNG previews with
+         * CGImageCreate: invalid image size: 0 x 0. A one-page PDF transports
+         * the same raster image through the working native PDF preview path.
+         */
+        CGRect page = CGRectMake(0, 0, CGImageGetWidth(image), CGImageGetHeight(image));
+        NSMutableData *pdf = [NSMutableData data];
+        CGDataConsumerRef consumer = CGDataConsumerCreateWithCFData((__bridge CFMutableDataRef)pdf);
+        CGContextRef context = consumer ? CGPDFContextCreate(consumer, &page, NULL) : NULL;
+        if (consumer != NULL) CGDataConsumerRelease(consumer);
+        if (context == NULL) {
+            CGImageRelease(image);
+            return paramErr;
+        }
+        CGPDFContextBeginPage(context, NULL);
+        CGContextSetRGBFillColor(context, 1, 1, 1, 1);
+        CGContextFillRect(context, page);
+        CGContextDrawImage(context, page, image);
+        CGPDFContextEndPage(context);
+        CGPDFContextClose(context);
+        CGContextRelease(context);
+        CGImageRelease(image);
+        QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)pdf, kUTTypePDF, NULL);
     }
     return noErr;
 }

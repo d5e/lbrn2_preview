@@ -4,6 +4,8 @@ A small legacy Quick Look generator for macOS Catalina. It reads the PNG embedde
 
 LightBurn stores its project as XML and places the preview PNG in the `Source` attribute of a top-level `Thumbnail` element. This generator extracts that image; it does not render the project geometry.
 
+Thumbnails return the PNG directly to Image I/O. Full previews draw that same raster image into an in-memory, one-page PDF and return `kUTTypePDF`. On the Catalina reference machine, returning encoded image data or a bitmap context caused QuickLookUIService to report `CGImageCreate: invalid image size: 0 x 0` and show the application icon. Supplying image dimensions did not resolve it. The PDF representation bypasses that failing image display path. It does not add image detail or write a PDF beside the project.
+
 ## Requirements
 
 - macOS 10.15 Catalina (later macOS versions have not been validated)
@@ -61,3 +63,17 @@ qlmanage -r cache
 ```
 
 Then reopen the Finder window. For diagnosis, `qlmanage -t -o /tmp /path/to/file.lbrn2` requests a thumbnail.
+
+## Visual acceptance check
+
+The local reference project is `[reference project]`. It is not included in this repository. Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the reference machine after the PDF preview change.
+
+`qlmanage -p -o` only saves generated preview data; its success message does not establish that Finder can display the result. The diagnostic below uses Apple's actual `QLPreviewView` and captures its rendered window for inspection:
+
+```sh
+mkdir -p build
+xcrun clang -fobjc-arc -framework Cocoa -framework Quartz tools/preview-check.m -o build/preview-check
+build/preview-check /absolute/path/to/project.lbrn2 /tmp/lightburn-preview-check.png
+```
+
+Inspect the screenshot for the design rather than the LightBurn icon. The diagnostic opens a temporary window for five seconds and then closes it.
