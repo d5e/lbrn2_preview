@@ -251,7 +251,8 @@ static OSStatus GeneratePreviewForURL(void *thisInterface,
     @autoreleasepool {
         NSData *png = ReadValidatedEmbeddedPNG(url);
         if (png == nil || QLPreviewRequestIsCancelled(preview)) return paramErr;
-        QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)png, kUTTypePNG, NULL);
+        /* The legacy Quick Look preview API expects the generic image UTI. */
+        QLPreviewRequestSetDataRepresentation(preview, (__bridge CFDataRef)png, kUTTypeImage, NULL);
     }
     return noErr;
 }
