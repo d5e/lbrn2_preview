@@ -70,6 +70,8 @@ Then reopen the Finder window. For diagnosis, `qlmanage -t -o /tmp /path/to/file
 
 Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the Catalina reference machine after the PDF preview change. On Monterey 12.7.5, both the generated thumbnail and the full Quick Look preview were visually confirmed with a user-supplied `.lbrn2` project.
 
+The repository includes a LightBurn sample at `tests/fixtures/2023-girl-engraving-calibration-alpha.lbrn2`. Run `./scripts/test-sample.sh` to rebuild and install the generator, generate its Finder thumbnail, and capture a full Quick Look preview. Inspect both images in `build/sample-test/` to confirm they show the design.
+
 `qlmanage -p -o` only saves generated preview data; its success message does not establish that Finder can display the result. The diagnostic below uses Apple's actual `QLPreviewView` and captures its rendered window for inspection:
 
 ```sh
