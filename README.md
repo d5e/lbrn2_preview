@@ -1,6 +1,6 @@
 # LightBurn Quick Look for macOS
 
-LightBurn Quick Look for macOS adds Finder thumbnails and Quick Look previews for `.lbrn` and `.lbrn2` projects when the installed LightBurn version lacks native macOS previews. It is especially useful on Catalina: [LightBurn 1.7.08](https://docs.lightburnsoftware.com/2.2/GetStarted/InstallLightBurn/) is the final release compatible with macOS versions earlier than 11, and this project has been verified with that version on Catalina. Compatibility with other LightBurn releases has not been established across the full version range.
+LightBurn Quick Look for macOS adds Finder thumbnails and Quick Look previews for `.lbrn` and `.lbrn2` projects when the installed LightBurn version lacks native macOS previews. It is especially useful on Catalina: [LightBurn 1.7.08](https://docs.lightburnsoftware.com/1.7/GetStarted/InstallLightBurn/) is the final release compatible with macOS versions earlier than 11, and this project has been verified with that version on Catalina. Compatibility with other LightBurn releases has not been established across the full version range.
 
 LightBurn stores its projects as XML and places the preview image in the `Source` attribute of a top-level `Thumbnail` element. This generator extracts that embedded image; it does not render the project geometry.
 
