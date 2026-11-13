@@ -1,16 +1,18 @@
-# LightBurn Quick Look for macOS
+# LightBurn Quick Look for macOS Catalina and Monterey
 
-A small legacy Quick Look generator for macOS Catalina. It reads the PNG embedded in a LightBurn `.lbrn` or `.lbrn2` project and gives that image to Finder for file thumbnails and Quick Look previews.
+A small legacy Quick Look generator for macOS Catalina and Monterey. It reads the PNG embedded in a LightBurn `.lbrn` or `.lbrn2` project and gives that image to Finder for file thumbnails and Quick Look previews.
 
 LightBurn stores its project as XML and places the preview PNG in the `Source` attribute of a top-level `Thumbnail` element. This generator extracts that image; it does not render the project geometry.
 
 Thumbnails return the PNG directly to Image I/O. Full previews draw that same raster image into an in-memory, one-page PDF and return `kUTTypePDF`. On the Catalina reference machine, returning encoded image data or a bitmap context caused QuickLookUIService to report `CGImageCreate: invalid image size: 0 x 0` and show the application icon. Supplying image dimensions did not resolve it. The PDF representation bypasses that failing image display path. It does not add image detail or write a PDF beside the project.
 
-## Requirements
+## Requirements and compatibility
 
-- macOS 10.15 Catalina (later macOS versions have not been validated)
-- An Intel Mac for the current build (Catalina itself only supports Intel)
+- macOS 10.15 Catalina or macOS 12 Monterey
+- An Intel Mac for the current build
 - Apple Command Line Tools with `clang`
+
+The generator uses the same implementation on both systems. Its deployment target and bundle minimum remain macOS 10.15, preserving Catalina compatibility. The build uses the Catalina SDK when it is installed and otherwise uses the current macOS SDK. It has been visually verified on the Catalina reference system and on Monterey 12.7.5 with an Intel Mac.
 
 ## Install on this Mac
 
@@ -49,7 +51,7 @@ This removes this generator from `~/Library/QuickLook` and refreshes Quick Look.
 
 ## Troubleshooting
 
-Check that Catalina has loaded the generator:
+Check that macOS has loaded the generator:
 
 ```sh
 qlmanage -m plugins | grep -i lightburn
@@ -66,7 +68,7 @@ Then reopen the Finder window. For diagnosis, `qlmanage -t -o /tmp /path/to/file
 
 ## Visual acceptance check
 
-The local reference project is `[reference project]`. It is not included in this repository. Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the reference machine after the PDF preview change.
+The local reference project is `[reference project]`. It is not included in this repository. Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the Catalina reference machine after the PDF preview change. On Monterey 12.7.5, both the generated thumbnail and the full Quick Look preview were visually confirmed with a user-supplied `.lbrn2` project.
 
 `qlmanage -p -o` only saves generated preview data; its success message does not establish that Finder can display the result. The diagnostic below uses Apple's actual `QLPreviewView` and captures its rendered window for inspection:
 
