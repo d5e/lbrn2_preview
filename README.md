@@ -68,7 +68,7 @@ Then reopen the Finder window. For diagnosis, `qlmanage -t -o /tmp /path/to/file
 
 ## Visual acceptance check
 
-The local reference project is `[reference project]`. It is not included in this repository. Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the Catalina reference machine after the PDF preview change. On Monterey 12.7.5, both the generated thumbnail and the full Quick Look preview were visually confirmed with a user-supplied `.lbrn2` project.
+Acceptance requires the embedded design to appear in Finder's Preview pane and Quick Look, as well as the file thumbnail. This was visually confirmed on the Catalina reference machine after the PDF preview change. On Monterey 12.7.5, both the generated thumbnail and the full Quick Look preview were visually confirmed with a user-supplied `.lbrn2` project.
 
 `qlmanage -p -o` only saves generated preview data; its success message does not establish that Finder can display the result. The diagnostic below uses Apple's actual `QLPreviewView` and captures its rendered window for inspection:
 
